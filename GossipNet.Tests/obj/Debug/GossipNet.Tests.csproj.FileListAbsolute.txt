@@ -1,0 +1,15 @@
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\GossipNet.Tests.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\GossipNet.Tests.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\FluentAssertions.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\GossipNet.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\xunit.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\Serilog.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\GossipNet.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\FluentAssertions.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\FluentAssertions.xml
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\xunit.xml
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\Serilog.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\bin\Debug\Serilog.xml
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\obj\Debug\GossipNet.Tests.csprojResolveAssemblyReference.cache
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\obj\Debug\GossipNet.Tests.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Tests\obj\Debug\GossipNet.Tests.pdb

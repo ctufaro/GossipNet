@@ -1,0 +1,14 @@
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\GossipNet.Console.exe.config
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\GossipNet.Console.exe
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\GossipNet.Console.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\GossipNet.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.FullNetFx.dll
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\GossipNet.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.xml
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.FullNetFx.pdb
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\bin\Debug\Serilog.FullNetFx.xml
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\obj\Debug\GossipNet.Console.csprojResolveAssemblyReference.cache
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\obj\Debug\GossipNet.Console.exe
+C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet.Console\obj\Debug\GossipNet.Console.pdb
