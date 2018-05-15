@@ -19,7 +19,7 @@ namespace GossipNet.IO
         private readonly IGossipMessageDecoder _messageDecoder;
         private readonly IGossipMessageEncoder _messageEncoder;
         private BroadcastQueue _broadcasts;
-        private GossipUdpClient _client;
+        private GossipTcp _client;
 
         public GossipMessagePump(GossipNodeConfiguration configuration, IGossipMessageDecoder messageDecoder, IGossipMessageEncoder messageEncoder)
         {
@@ -59,7 +59,7 @@ namespace GossipNet.IO
             Debug.Assert(broadcastTransmitCount != null);
 
             _broadcasts = new BroadcastQueue(broadcastTransmitCount);
-            _client = new GossipUdpClient(_configuration.LocalEndPoint, DatagramReceived, _configuration.Logger);
+            _client = new GossipTcp(_configuration.LocalEndPoint, DatagramReceived, _configuration.Logger);
         }
 
         public void Send(IPEndPoint remoteEndPoint, GossipMessage message)
@@ -220,6 +220,115 @@ namespace GossipNet.IO
                     }
                 }
             }
+        }
+
+        private class GossipTcp
+        {
+            private TcpListener tcpListener;
+            private readonly ILogger _logger;
+            private readonly Action<IPEndPoint, byte[]> _onReceive;
+            private bool _closed;
+            private Dictionary<string,NetworkStream> streams = new Dictionary<string,NetworkStream>();
+
+            public GossipTcp(IPEndPoint localEndPoint, Action<IPEndPoint, byte[]> onReceive, ILogger logger)
+            {
+                Debug.Assert(localEndPoint != null);
+                Debug.Assert(onReceive != null);
+                Debug.Assert(logger != null);
+
+                tcpListener = new TcpListener(localEndPoint);
+                tcpListener.Start();
+                Console.WriteLine("[Server] Listening on {0}", localEndPoint.ToString());
+                StartListening();               
+
+                _onReceive = onReceive;
+                _logger = logger;
+            }
+
+            public async void StartListening()
+            {
+                TcpClient _client = await tcpListener.AcceptTcpClientAsync();
+                var buffer = new byte[4096];
+                StateObject state = new StateObject();
+                state.workSocket = _client.Client;
+                _client.Client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, Receive, state);              
+                Console.WriteLine("[Server] Accepted Client");
+            }
+
+            public void Close()
+            {
+                _closed = true;
+                tcpListener.Server.Close();
+            }
+
+            public async void Send(IPEndPoint remoteEndPoint, byte[] bytes)
+            {
+                try
+                {
+                    using (TcpClient _client = new TcpClient())
+                    {
+                        await _client.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
+                        using (NetworkStream networkStream = _client.GetStream())
+                        {
+                            networkStream.Write(bytes, 0, bytes.Length);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e.ToString());
+                }
+            }
+
+            private void Receive(IAsyncResult ar)
+            {
+                StateObject state = (StateObject)ar.AsyncState;
+                Socket handler = state.workSocket;
+                IPEndPoint remoteEndPoint = handler.LocalEndPoint as IPEndPoint;
+
+                byte[] data = null;
+                try
+                {
+                    //data = _client.EndReceive(ar, ref remoteEndPoint);
+                    int bytesRead = handler.EndReceive(ar);
+                    if (bytesRead > 0)
+                    {
+                        state.sb.Append(Encoding.UTF8.GetString(state.buffer, 0, bytesRead));
+                    }
+                    data = state.buffer;
+                }
+                catch (ObjectDisposedException)
+                {
+                    // thrown when the client is closed...
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warning(ex, "Error occured in udp client EndReceive. Ignoring and moving on.");
+                }
+
+                if (!_closed)
+                {
+                    //_client.BeginReceive(Receive, null);
+                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, Receive, state);
+                    if (remoteEndPoint != null && data != null)
+                    {
+                        _onReceive(remoteEndPoint, data);
+                    }
+                }
+            }
+        }
+
+        // State object for reading client data asynchronously  
+        public class StateObject
+        {
+            // Client  socket.  
+            public Socket workSocket = null;
+            // Size of receive buffer.  
+            public const int BufferSize = 1024;
+            // Receive buffer.  
+            public byte[] buffer = new byte[BufferSize];
+            // Received data string.  
+            public StringBuilder sb = new StringBuilder();
         }
     }
 }

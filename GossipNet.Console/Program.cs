@@ -7,12 +7,111 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
+using System.Net.Sockets;
 
 namespace GossipNet.Console
 {
     class Program
     {
+        //https://gist.github.com/jamesmanning/2622054
         static void Main(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                System.Console.WriteLine("Missing Command Arguments");
+            }
+            else
+            {
+                switch (args[0].ToLower())
+                {
+                    case ("l"):
+                        StartListener();
+                        break;
+                    case ("c"):
+                        StartClient();
+                        break;
+                }
+            }
+            System.Console.ReadLine();
+        }
+
+        static void StartListener()
+        {
+            IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 1234);
+            
+
+            List<TcpClient> peers = new List<TcpClient>();
+
+            Task.Run(async() =>
+            {
+                TcpListener tcpListener = new TcpListener(ipEnd);
+                tcpListener.Start();
+
+                while (true)
+                {
+                    System.Console.WriteLine("[Server] Listening on {0}", ipEnd.ToString());
+                    var tcpClient = await tcpListener.AcceptTcpClientAsync();                    
+                    System.Console.WriteLine("[Server] Connection accepted from client '{0}'.", tcpClient.Client.RemoteEndPoint);
+                    peers.Add(tcpClient);
+
+                    await Task.Run(async() =>
+                    {
+                        System.Console.WriteLine("Number of Peers: " + peers.Count);
+                        foreach(TcpClient p in peers)
+                        {
+                            NetworkStream ns = p.GetStream();
+                            string ServerResponseString = DateTime.Now.ToString();
+                            byte[] ServerResponseBytes = Encoding.UTF8.GetBytes(ServerResponseString);
+                            await ns.WriteAsync(ServerResponseBytes, 0, ServerResponseBytes.Length);
+                        }
+                    });
+
+                }
+            });            
+        }
+
+        static async Task HandleClient(TcpClient tcpClient)
+        {
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    NetworkStream stream = tcpClient.GetStream();
+                    var buffer = new byte[4096];
+                    var byteCount = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
+                    System.Console.WriteLine("[Server] Client wrote {0}", request);
+                }
+            });
+        }
+
+        static void StartClient()
+        {
+            Task.Run(async () =>
+            {                
+                using (var tcpClient = new TcpClient())
+                {
+                    System.Console.WriteLine("[Client] Connecting to server");
+                    await tcpClient.ConnectAsync("127.0.0.1", 1234);
+                    System.Console.WriteLine("[Client] Connected to server, opening stream");
+                    //using (NetworkStream networkStream = tcpClient.GetStream())
+                    //{
+                        while (true)
+                        {
+                            using (NetworkStream networkStream = tcpClient.GetStream())
+                            {
+                                var buffer = new byte[4096];
+                                var byteCount = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                                var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
+                                System.Console.WriteLine("[Client] Server wrote {0}", request);
+                            }
+                        }
+                    //}
+                }
+                
+            });
+        }
+        static void Main2(string[] args)
         {
             if(Debugger.IsAttached)
             {

@@ -6,6 +6,5 @@ C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\bin\Debug\Serilog.pdb
 C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\bin\Debug\Serilog.xml
 C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\bin\Debug\Serilog.FullNetFx.pdb
 C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\bin\Debug\Serilog.FullNetFx.xml
-C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\obj\Debug\GossipNet.csprojResolveAssemblyReference.cache
 C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\obj\Debug\GossipNet.dll
 C:\Users\ctufaro_admin\My Projects\GossipNet\GossipNet\obj\Debug\GossipNet.pdb
