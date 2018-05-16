@@ -13,12 +13,16 @@ namespace GossipNet.Console
 {
     class Program
     {
+        private static string[] messages = new string[] { "Hi server", "I hear Laurel", "Yeah cray cray" };
+        private static int count = 0;
+
         //https://gist.github.com/jamesmanning/2622054
         static void Main(string[] args)
         {
             if (args.Length == 0)
             {
-                System.Console.WriteLine("Missing Command Arguments");
+                //System.Console.WriteLine("Missing Command Arguments");
+                StartClient();
             }
             else
             {
@@ -85,31 +89,43 @@ namespace GossipNet.Console
             });
         }
 
-        static void StartClient()
+        static async void StartClient()
         {
-            Task.Run(async () =>
-            {                
-                using (var tcpClient = new TcpClient())
+            var tcpClient = new TcpClient();
+            System.Console.WriteLine("[Client] Connecting to server");
+            await tcpClient.ConnectAsync("127.0.0.1", 1234);
+            System.Console.WriteLine("[Client] Connected to server, opening stream");
+
+            await Task.Run(async () =>
+            {
+                NetworkStream stream = tcpClient.GetStream();
+                while (true)
                 {
-                    System.Console.WriteLine("[Client] Connecting to server");
-                    await tcpClient.ConnectAsync("127.0.0.1", 1234);
-                    System.Console.WriteLine("[Client] Connected to server, opening stream");
-                    //using (NetworkStream networkStream = tcpClient.GetStream())
-                    //{
-                        while (true)
-                        {
-                            using (NetworkStream networkStream = tcpClient.GetStream())
-                            {
-                                var buffer = new byte[4096];
-                                var byteCount = await networkStream.ReadAsync(buffer, 0, buffer.Length);
-                                var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
-                                System.Console.WriteLine("[Client] Server wrote {0}", request);
-                            }
-                        }
-                    //}
+                    await SendClientMessage(stream);
+                    Thread.Sleep(2000);
+                    await ReceiveClientMessage(stream);
+                    Thread.Sleep(2000);
                 }
-                
             });
+        }
+
+        private static async Task ReceiveClientMessage(NetworkStream networkStream)
+        {
+            var buffer = new byte[4096];
+            var byteCount = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+            var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
+            System.Console.WriteLine("[Server] Client wrote {0}", request);
+        }
+
+        private static async Task SendClientMessage(NetworkStream networkStream)
+        {
+            if (count < messages.Length)
+            {
+                string response = messages[count];
+                count = Interlocked.Increment(ref count);
+                byte[] serverResponseBytes = Encoding.UTF8.GetBytes(response);
+                await networkStream.WriteAsync(serverResponseBytes, 0, serverResponseBytes.Length);
+            }
         }
         static void Main2(string[] args)
         {
